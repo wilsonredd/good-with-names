@@ -38,7 +38,6 @@ const personSchema = new mongoose.Schema({
     interests: [String],
     where: String,
     physFeatures: [String],
-    friends: [String]
 });
 
 const User = mongoose.model('User', userSchema);
@@ -74,7 +73,6 @@ app.post('/api/signup', async (req, res)  => {
         let user = await User.findOne({
             name: req.body.name
         });
-        console.log(user);
         if (user === null) {
             user = new User({
                 name: req.body.name,
@@ -84,6 +82,56 @@ app.post('/api/signup', async (req, res)  => {
             user.save();
         }
         res.send(user);
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(500);
+    }
+});
+
+app.put('/api/friend/:id', async(req, res) => {
+    try {
+        let user = await User.findOne({
+            _id: req.params.id
+        });
+        console.log(user)
+        let person = new Person({
+            name: req.body.name,
+            path: req.body.path,
+            age: "",
+            interests: [],
+            where: "",
+            physFeatures: [],
+        });
+        person.save();
+
+        user.friends.push(person._id);
+        console.log(user.friends);
+        user.save()
+        res.send(person);
+    } catch (error) {
+      console.log(error);
+      res.sendStatus(500);
+    }
+});
+
+app.get('/api/friends/:id', async(req, res) => {
+    try{
+        let user = await User.findOne({
+            _id: req.params.id
+        });
+    
+        friendIds = user.friends
+        friends = []
+        let friend = null;
+    
+        for(let i = 0; i < friendIds.length; i++) {
+            friend = await Person.findOne({
+                _id: friendIds[i]
+            });
+            friends.push(friend);
+        }
+        console.log(friends)
+        res.send(friends);
     } catch (error) {
         console.log(error);
         res.sendStatus(500);

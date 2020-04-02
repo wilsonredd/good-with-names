@@ -1,6 +1,5 @@
 <template>
   <div class="home">
-    
     <div class="login" v-if="!loggedIn">
       <h1>Welcome</h1>
       <input class="nameInput" v-model="name" placeholder="Full Name">
@@ -11,8 +10,8 @@
     <div class="friendList" v-if="loggedIn">
       <h1>Your Friends</h1>
       <p class="noFriends" v-if="friendList.length === 0">You have no friends added yet. Please add friends.</p>
-      <div class="friend" v-for="friend in friendList" v-bind:key="friend.id">
-        <p>friend.name</p>
+      <div class="friend" v-for="friend in friendList" v-bind:key="friend._id">
+        <p>{{friend.name}}</p>
       </div>
       <button class="logoutButton" @click="logout">Logout</button>
     </div>
@@ -37,6 +36,12 @@ export default {
   },
   created() {
     
+  },
+  async mounted() {
+    if (this.$root.$data.user !== null){
+      let r1 = await axios.get('/api/friends/' + this.$root.$data.user._id);
+      this.friendList = r1.data;
+    }
   },
   methods: {
     async login() {
@@ -84,6 +89,9 @@ export default {
 </script>
 
 <style scoped>
+  .home {
+    min-height: 100vh;
+  }
   button {
     width: 100px;
     margin: 5px;
@@ -92,14 +100,6 @@ export default {
     text-align: center;
     color: #FF0000;
     margin: 5px;
-  }
-
-  .friendList {
-    min-height: 75vh;
-  }
-
-  .login {
-    min-height: 75vh;
   }
 
   .login h1 {
