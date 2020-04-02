@@ -57,4 +57,37 @@ app.post('/api/photos', upload.single('photo'), async (req, res) => {
     });
 });
 
+app.get('/api/login', async (req, res)  => {
+    try{
+        let user = await User.findOne({
+            name: req.query.name
+        });
+        res.send(user)
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(500);
+    }
+});
+
+app.post('/api/signup', async (req, res)  => {
+    try{
+        let user = await User.findOne({
+            name: req.body.name
+        });
+        console.log(user);
+        if (user === null) {
+            user = new User({
+                name: req.body.name,
+                path: null,
+                friends: [],
+            });
+            user.save();
+        }
+        res.send(user);
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(500);
+    }
+});
+
 app.listen(3000, () => console.log('Server listening on port 3000!'));
