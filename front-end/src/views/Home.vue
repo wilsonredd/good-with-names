@@ -2,6 +2,14 @@
   <div class="home">
     <div class="login" v-if="!loggedIn">
       <h1>Welcome</h1>
+      <p class="intro">
+          Good With Names is a web application to help you keep track of everyone
+          you meet, so you can easily remember their name next time you see them.
+      </p>
+
+      <p class="get-started">
+          To begin, sign up or login with your name.
+      </p>
       <input class="nameInput" v-model="name" placeholder="Full Name">
       <p class="error">{{error}}</p>
       <button @click="login">Log In</button>
@@ -11,13 +19,13 @@
       <h1>Your Friends</h1>
       <p class="noFriends" v-if="friendList.length === 0">You have no friends added yet. Please add friends.</p>
       <div class="friend" v-for="friend in friendList" v-bind:key="friend._id">
-        <img :src="friend.path" alt="">
+        <img class="friend-image" :src="friend.path" alt="">
         <h2>{{friend.name}}</h2>
         <p>Age: {{friend.age}}</p>
         <p>Interest: {{friend.interest}}</p>
         <p>Where I Met Them: {{friend.where}}</p>
         <p>Physical Quality: {{friend.definingPhysicalFeature}}</p>
-        <p @click="deleteFriend(friend._id)">Remove Friend</p>
+        <p class="delete-friend" @click="deleteFriend(friend._id)">Remove Friend</p>
         <br>
       </div>
       <button class="logoutButton" @click="logout">Logout</button>
@@ -31,14 +39,14 @@ export default {
     name: 'Home',
     data() {
         return {
-        name: "",
-        error: "",
-        friendList: [],
+            name: "",
+            error: "",
+            friendList: [],
         }
     },
     computed: {
         loggedIn() {
-        return this.$root.$data.loggedIn;
+            return this.$root.$data.loggedIn;
         }
     },
     created() {
@@ -46,7 +54,7 @@ export default {
     },
     async mounted() {
         if (this.$root.$data.user !== null){
-        this.updateFriendsList();
+            this.updateFriendsList();
         }
     },
     methods: {
@@ -57,35 +65,35 @@ export default {
             if(this.name.length !== 0) {
                 console.log(this.name);
                 let r1 = await axios.get('/api/login', {
-                params: {
-                    name: this.name
-                }
+                    params: {
+                        name: this.name
+                    }
                 });
                 if (r1.data !== "") {
-                this.$root.$data.user = r1.data;
-                this.updateFriendsList();
-                this.$root.$data.loggedIn = true;
-                this.error = "";
-                
+                    console.log(r1.data);
+                    this.$root.$data.user = r1.data;
+                    this.updateFriendsList();
+                    this.$root.$data.loggedIn = true;
+                    this.error = "";
                 }
                 else {
-                this.error = "This user does not exist, yet.";
+                    this.error = "This user does not exist, yet.";
                 }
             }
         },
         async signUp() {
             if(this.name.length !== 0) {
                 let r1 = await axios.post('/api/signup', {
-                name: this.name
+                    name: this.name
                 });
                 if (r1.data !== "") {
-                this.$root.$data.user = r1.data;
-                this.updateFriendsList();
-                this.$root.$data.loggedIn = true;
-                this.error = "";
+                    this.$root.$data.user = r1.data;
+                    this.updateFriendsList();
+                    this.$root.$data.loggedIn = true;
+                    this.error = "";
                 }
                 else {
-                this.error = "This user does not exist, yet.";
+                    this.error = "This user does not exist, yet.";
                 }
             }
         },
@@ -104,10 +112,10 @@ export default {
             } catch (error) {
                 console.log(error);
             }
-
         },
         async updateFriendsList() {
             let r1 = await axios.get('/api/friends/' + this.$root.$data.user._id);
+            console.log(r1.data);
             this.friendList = r1.data;
         }
     }
@@ -128,6 +136,14 @@ export default {
     margin: 5px;
   }
 
+  .intro {
+    padding: 10px;
+  }
+
+  .get-started {
+    padding: 10px;
+  }
+
   .login h1 {
     margin-bottom: 15px;
   }
@@ -143,6 +159,13 @@ export default {
   .friend p:last-of-type{
       margin-top: 20px;
   }
+
+  .friend-image {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 5px;
+    width: 250px;
+  }
   
   .noFriends {
     margin-top: 50px;
@@ -150,7 +173,18 @@ export default {
     text-align: center;
   }
 
+  .delete-friend:hover {
+      color: #FF0000;
+  }
+
   .logoutButton {
     margin-top: 50px;
   }
+
+@media only screen and (min-width: 1024px) {
+    .login {
+        margin-right: 25%;
+        margin-left: 25%;
+    }
+}
 </style>

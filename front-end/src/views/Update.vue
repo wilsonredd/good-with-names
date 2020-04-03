@@ -1,7 +1,50 @@
 <template>
-    <div class="update">
-        <h1>Update Your Information</h1>
-        <div class="form" v-if="loggedIn && updating">
+<div class="update">
+    <h1>Update Your Information</h1>
+
+    <div class="form" v-if="loggedIn && updating">
+        <div class="input">
+            <p>Name:</p>
+            <input v-model="name" placeholder="Jane Smith">
+        </div>
+        <div class="input">
+            <p>Age:</p>
+            <input v-model="age" placeholder="22">
+        </div>
+        <div class="input">
+            <p>Interest/Hobbie:</p>
+            <input v-model="interest" placeholder="Drone Racing">
+        </div>
+        <div class="input">
+            <p>Where You Met Yourself:</p>
+            <input v-model="where" placeholder="California">
+        </div>
+        <div class="input">
+            <p>Defining Physical Feature:</p>
+            <input v-model="physical" placeholder="Deep blue eyes">
+        </div>
+        <div class="file-upload">
+            <p>Upload A Photo of Yourself:</p>
+            <input type="file" name="photo" @change="fileChanged">
+        </div>
+        <button type="button" class="updateInfoButton" @click="updateInfo">Update Information</button>
+    </div>
+    <div @click="toggleForm" v-if="!updating">
+        <h2>Your Current Information</h2>
+        <img class="personal-image" :src="info.path" alt="">
+        <h2>{{info.name}}</h2>
+        <p>Age: {{info.age}}</p>
+        <p>Interest: {{info.interest}}</p>
+        <p>Where I Met Them: {{info.where}}</p>
+        <p>Physical Quality: {{info.definingPhysicalFeature}}</p>
+        <p class="show-form" @click="toggleForm">Click Here To Change Something Else</p>
+    </div>
+    <p class="show-info" @click="toggleForm" v-if="loggedIn && updating">Click Here To See Your Current Information</p>
+    <p class="error" v-if="!loggedIn">Please Log In So You Can Update Your Info</p>
+</div>
+
+
+        <!-- <div class="form" v-if="loggedIn && updating">
             <input v-model="name" placeholder="Name">
             <p></p>
             <input v-model="age" placeholder="Age">
@@ -16,20 +59,8 @@
                 <input type="file" name="photo" @change="fileChanged">
                 <button @click="updateInfo">Update Information</button>
             </div>
-        </div>
-        <div @click="toggleForm" v-if="!updating">
-            <h2>Your New Information</h2>
-            <img :src="info.path" alt="">
-            <h2>{{info.name}}</h2>
-            <p>Age: {{info.age}}</p>
-            <p>Interest: {{info.interest}}</p>
-            <p>Where I Met Them: {{info.where}}</p>
-            <p>Physical Quality: {{info.definingPhysicalFeature}}</p>
-            <p @click="toggleForm">Click Here To Change Something Else</p>
-        </div>
-        <p @click="toggleForm" v-if="updating">Click Here To See Your Current Information</p>
-        <p class="error" v-if="!loggedIn">Please Log In So You Can Update Your Info</p>
-    </div>
+        </div> -->
+
 </template>
 
 <script>
@@ -104,10 +135,64 @@ export default {
 </script>
 
 <style scoped>
-.error {
-margin: 50px 0px 75vh 0px;
-padding: 0px 5px 0px 5px;
-text-align: center;
-color: #FF0000;
-}
+    .update {
+        min-height: 75vh;
+    }
+
+    .error {
+        margin: 50px 0px 75vh 0px;
+        padding: 0px 5px 0px 5px;
+        text-align: center;
+        color: #FF0000;
+    }
+
+    .form {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .input {
+        display: flex;
+        flex-direction: column;
+        margin: 5px;
+        width: 250px;
+    }
+
+    .file-upload {
+        display: flex;
+        flex-direction: column;
+        margin: 5px;
+        width: 250px;
+    }
+
+    .file-upload>p {
+        text-align: left;
+    }
+
+    .input>p{
+        text-align: left;
+    }
+
+    .updateInfoButton {
+        margin: 5px;
+    }
+
+    .show-info {
+        margin: 5px;
+        font-weight: bold;
+    }
+
+    .show-form {
+        margin: 5px;
+        font-weight: bold;
+    }
+
+    .personal-image {
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 5px;
+        width: 250px;
+    }
 </style>

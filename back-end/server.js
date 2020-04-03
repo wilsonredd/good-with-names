@@ -113,6 +113,7 @@ app.put('/api/friend/:id', async(req, res) => {
             req.body.path = "/images/dummy.jpg";
         }
 
+        console.log(req.body.path);
         // Create new friend object
         let person = new Person({
             name: req.body.name,
@@ -123,7 +124,7 @@ app.put('/api/friend/:id', async(req, res) => {
             definingPhysicalFeature: req.body.physical
         });
         person.save();
-
+        console.log("_id " + person._id)
         // Push friend's id onto users friend list
         user.friends.push(person._id);
         console.log(user.friends);
