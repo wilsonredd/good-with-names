@@ -11,7 +11,14 @@
       <h1>Your Friends</h1>
       <p class="noFriends" v-if="friendList.length === 0">You have no friends added yet. Please add friends.</p>
       <div class="friend" v-for="friend in friendList" v-bind:key="friend._id">
-        <p>{{friend.name}}</p>
+        <img :src="friend.path" alt="">
+        <h2>{{friend.name}}</h2>
+        <p>Age: {{friend.age}}</p>
+        <p>Interest: {{friend.interest}}</p>
+        <p>Where I Met Them: {{friend.where}}</p>
+        <p>Physical Quality: {{friend.definingPhysicalFeature}}</p>
+        <p @click="deleteFriend(friend._id)">Remove Friend</p>
+        <br>
       </div>
       <button class="logoutButton" @click="logout">Logout</button>
     </div>
@@ -21,70 +28,89 @@
 <script>
 import axios from 'axios';
 export default {
-  name: 'Admin',
-  data() {
-    return {
-      name: "",
-      error: "",
-      friendList: [],
-    }
-  },
-  computed: {
-    loggedIn() {
-      return this.$root.$data.loggedIn;
-    }
-  },
-  created() {
-    
-  },
-  async mounted() {
-    if (this.$root.$data.user !== null){
-      let r1 = await axios.get('/api/friends/' + this.$root.$data.user._id);
-      this.friendList = r1.data;
-    }
-  },
-  methods: {
-    async login() {
-      if(this.name.length !== 0) {
-        console.log(this.name);
-        let r1 = await axios.get('/api/login', {
-          params: {
-            name: this.name
-          }
-        });
-        if (r1.data !== "") {
-          this.$root.$data.user = r1.data;
-          this.$root.$data.loggedIn = true;
-          this.error = "";
+    name: 'Home',
+    data() {
+        return {
+        name: "",
+        error: "",
+        friendList: [],
         }
-        else {
-          this.error = "This user does not exist, yet.";
-        }
-      }
     },
-    async signUp() {
-      if(this.name.length !== 0) {
-        let r1 = await axios.post('/api/signup', {
-          name: this.name
-        });
-        if (r1.data !== "") {
-          this.$root.$data.user = r1.data;
-          this.$root.$data.loggedIn = true;
-          this.error = "";
+    computed: {
+        loggedIn() {
+        return this.$root.$data.loggedIn;
         }
-        else {
-          this.error = "This user does not exist, yet.";
-        }
-      }
     },
-    logout() {
-      this.name = "";
-      this.$root.$data.loggedIn = false;
-      this.error = "";
-      this.$root.$data.user = null;
-      this.friendList = [];
+    created() {
+        
+    },
+    async mounted() {
+        if (this.$root.$data.user !== null){
+        this.updateFriendsList();
+        }
+    },
+    methods: {
+        printName(id, name) {
+            console.log(id + " " + name);
+        },
+        async login() {
+            if(this.name.length !== 0) {
+                console.log(this.name);
+                let r1 = await axios.get('/api/login', {
+                params: {
+                    name: this.name
+                }
+                });
+                if (r1.data !== "") {
+                this.$root.$data.user = r1.data;
+                this.updateFriendsList();
+                this.$root.$data.loggedIn = true;
+                this.error = "";
+                
+                }
+                else {
+                this.error = "This user does not exist, yet.";
+                }
+            }
+        },
+        async signUp() {
+            if(this.name.length !== 0) {
+                let r1 = await axios.post('/api/signup', {
+                name: this.name
+                });
+                if (r1.data !== "") {
+                this.$root.$data.user = r1.data;
+                this.updateFriendsList();
+                this.$root.$data.loggedIn = true;
+                this.error = "";
+                }
+                else {
+                this.error = "This user does not exist, yet.";
+                }
+            }
+        },
+        logout() {
+            this.name = "";
+            this.$root.$data.loggedIn = false;
+            this.error = "";
+            this.$root.$data.user = null;
+            this.friendList = [];
+        },
+        async deleteFriend(id) {
+            try {
+                console.log(id);
+                await axios.delete('/api/friend/' + this.$root.$data.user._id + "/" + id);
+                this.updateFriendsList();
+            } catch (error) {
+                console.log(error);
+            }
+
+        },
+        async updateFriendsList() {
+            let r1 = await axios.get('/api/friends/' + this.$root.$data.user._id);
+            this.friendList = r1.data;
+        }
     }
-  }
 }
 </script>
 
@@ -112,6 +138,10 @@ export default {
     text-align: center;
     text-decoration: none;
     color: #2c3e50;
+  }
+
+  .friend p:last-of-type{
+      margin-top: 20px;
   }
   
   .noFriends {
